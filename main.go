@@ -10,14 +10,21 @@ import (
 
 // FIXME 仮実装
 func main() {
-	viewModel, err := view.NewViewModel(".")
+	app := tview.NewApplication()
+
+	viewModel := view.NewPanelViewModel()
+	err := viewModel.Init("/home/uraven")
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	view := view.NewView(viewModel)
-	if err := tview.NewApplication().SetRoot(view.Render(), true).Run(); err != nil {
+	viewModel.MappingKey('r', view.Reflesh)
+	viewModel.MappingKey('l', view.UpDir)
+
+	primitive := viewModel.Render()
+	if err := app.SetRoot(primitive, true).SetFocus(primitive).Run(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
+
 }

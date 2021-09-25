@@ -35,7 +35,7 @@ func Test_GetFileInfosUnderDir(t *testing.T) {
 		expected := len(f)
 
 		assert := assert.New(t)
-		fileInfos, err := GetFileInfosUnderDir(filePath)
+		fileInfos, _ := GetFileInfosUnderDir(filePath)
 
 		assert.Equal(expected, len(fileInfos), "🚨 Length of []os.FileInfo doesn't equal!!!")
 

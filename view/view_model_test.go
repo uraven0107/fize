@@ -13,7 +13,7 @@ func Test_NewViewModel(t *testing.T) {
 		assert := assert.New(t)
 		emptyPath := ""
 		_, err := NewViewModel(emptyPath)
-		assert.EqualError(err, "🚨 Empty string is not allowed in the path string")
+		assert.EqualError(err, "Empty string is not allowed in the path string")
 	})
 }
 
