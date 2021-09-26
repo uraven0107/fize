@@ -109,7 +109,7 @@ var DownDir = func(pvm *PanelViewModel) {
 }
 
 var UpDir = func(pvm *PanelViewModel) {
-	dirPath := utils.ResolveRootDirPath(pvm.dirPath)
+	dirPath := utils.ResolveParentDirPath(pvm.dirPath)
 	pvm.InitDir(dirPath)
 	if err := pvm.Reflesh(); err != nil {
 		fmt.Println(err)
