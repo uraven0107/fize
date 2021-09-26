@@ -17,13 +17,15 @@ type PanelViewModel struct {
 }
 
 func NewPanelViewModel() *PanelViewModel {
-	return &PanelViewModel{
+	pvm := &PanelViewModel{
 		panel:  NewPanel(),
 		keyMap: make(map[rune]func(*PanelViewModel)),
 	}
+	pvm.MappingKeyDefault()
+	return pvm
 }
 
-func (pvm *PanelViewModel) Init(dirPath string) error {
+func (pvm *PanelViewModel) InitDir(dirPath string) error {
 	fileInfos, err := service.FetchFileInfos(dirPath)
 	if err != nil {
 		return err
@@ -52,7 +54,7 @@ func (pvm *PanelViewModel) Clear() {
 
 func (pvm *PanelViewModel) Reflesh() error {
 	pvm.Clear()
-	err := pvm.Init(pvm.dirPath)
+	err := pvm.InitDir(pvm.dirPath)
 	if err != nil {
 		return err
 	}
@@ -62,15 +64,19 @@ func (pvm *PanelViewModel) Reflesh() error {
 
 func (pvm *PanelViewModel) MappingKey(key rune, binder func(*PanelViewModel)) {
 	pvm.keyMap[key] = binder
-	pvm.bindKey()
 }
 
-func (pvm *PanelViewModel) bindKey() {
+func (pvm *PanelViewModel) MappingKeyDefault() {
+	pvm.MappingKey('r', Reflesh)
+	pvm.MappingKey('l', UpDir)
+}
+
+func (pvm *PanelViewModel) InitKeyBind() {
 	table := pvm.panel.GetLayout().(*tview.Table)
-	for key, binder := range pvm.keyMap {
+	for key, fn := range pvm.keyMap {
 		table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 			if key == event.Rune() {
-				binder(pvm)
+				fn(pvm)
 				return nil
 			}
 			return event
@@ -92,7 +98,7 @@ var UpDir = func(pvm *PanelViewModel) {
 	fileInfo := selected.GetReference().(os.FileInfo)
 	if fileInfo.IsDir() {
 		dirPath := pvm.dirPath + "/" + fileInfo.Name()
-		pvm.Init(dirPath)
+		pvm.InitDir(dirPath)
 		if err := pvm.Reflesh(); err != nil {
 			fmt.Println(err)
 			os.Exit(1)
