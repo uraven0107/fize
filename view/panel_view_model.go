@@ -3,6 +3,7 @@ package view
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -68,20 +69,21 @@ func (pvm *PanelViewModel) MappingKey(key rune, binder func(*PanelViewModel)) {
 
 func (pvm *PanelViewModel) MappingKeyDefault() {
 	pvm.MappingKey('r', Reflesh)
-	pvm.MappingKey('l', UpDir)
+	pvm.MappingKey('l', DownDir)
+	pvm.MappingKey('h', UpDir)
 }
 
 func (pvm *PanelViewModel) InitKeyBind() {
 	table := pvm.panel.GetLayout().(*tview.Table)
-	for key, fn := range pvm.keyMap {
-		table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+		for key, fn := range pvm.keyMap {
 			if key == event.Rune() {
 				fn(pvm)
 				return nil
 			}
-			return event
-		})
-	}
+		}
+		return event
+	})
 }
 
 var Reflesh = func(pvm *PanelViewModel) {
@@ -91,7 +93,7 @@ var Reflesh = func(pvm *PanelViewModel) {
 	}
 }
 
-var UpDir = func(pvm *PanelViewModel) {
+var DownDir = func(pvm *PanelViewModel) {
 	table := pvm.panel.GetLayout().(*tview.Table)
 	row, col := table.GetSelection()
 	selected := table.GetCell(row, col)
@@ -103,5 +105,21 @@ var UpDir = func(pvm *PanelViewModel) {
 			fmt.Println(err)
 			os.Exit(1)
 		}
+	}
+}
+
+var UpDir = func(pvm *PanelViewModel) {
+	dirs := strings.Split(pvm.dirPath, "/")
+	var dirPath = ""
+	for i := 0; i < len(dirs)-1; i++ {
+		dirPath = "/" + dirs[i]
+	}
+	if dirPath == "" {
+		dirPath = "/"
+	}
+	pvm.InitDir(dirPath)
+	if err := pvm.Reflesh(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
 	}
 }
