@@ -99,7 +99,7 @@ var DownDir = func(pvm *PanelViewModel) {
 	selected := table.GetCell(row, col)
 	fileInfo := selected.GetReference().(os.FileInfo)
 	if fileInfo.IsDir() {
-		dirPath := pvm.dirPath + utils.DS + fileInfo.Name()
+		dirPath := utils.ResolvePath(pvm.dirPath, fileInfo.Name())
 		pvm.InitDir(dirPath)
 		if err := pvm.Reflesh(); err != nil {
 			fmt.Println(err)

@@ -7,6 +7,10 @@ import (
 
 const DS = string(filepath.Separator)
 
+func ResolvePath(dir string, target string) string {
+	return dir + DS + target
+}
+
 func ResolveRootDirPath(current string) string {
 	dirs := strings.Split(current, DS)
 	var dirPath = ""
