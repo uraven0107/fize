@@ -3,10 +3,10 @@ package view
 import (
 	"fmt"
 	"os"
-	"strings"
 
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
+	"github.com/uraven0107/fize/utils"
 	"github.com/uraven0107/fize/view/service"
 )
 
@@ -99,7 +99,7 @@ var DownDir = func(pvm *PanelViewModel) {
 	selected := table.GetCell(row, col)
 	fileInfo := selected.GetReference().(os.FileInfo)
 	if fileInfo.IsDir() {
-		dirPath := pvm.dirPath + "/" + fileInfo.Name()
+		dirPath := pvm.dirPath + utils.DS + fileInfo.Name()
 		pvm.InitDir(dirPath)
 		if err := pvm.Reflesh(); err != nil {
 			fmt.Println(err)
@@ -109,14 +109,7 @@ var DownDir = func(pvm *PanelViewModel) {
 }
 
 var UpDir = func(pvm *PanelViewModel) {
-	dirs := strings.Split(pvm.dirPath, "/")
-	var dirPath = ""
-	for i := 0; i < len(dirs)-1; i++ {
-		dirPath = "/" + dirs[i]
-	}
-	if dirPath == "" {
-		dirPath = "/"
-	}
+	dirPath := utils.ResolveRootDirPath(pvm.dirPath)
 	pvm.InitDir(dirPath)
 	if err := pvm.Reflesh(); err != nil {
 		fmt.Println(err)

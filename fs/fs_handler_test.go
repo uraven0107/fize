@@ -6,9 +6,10 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/uraven0107/fize/utils"
 )
 
-const TEST_DIR = "." + DS + "test"
+const TEST_DIR = "." + utils.DS + "test"
 
 func Test_GetFileInfosUnderDir(t *testing.T) {
 	t.Run("NotExistDirReturnError", func(t *testing.T) {
@@ -18,14 +19,14 @@ func Test_GetFileInfosUnderDir(t *testing.T) {
 	})
 
 	t.Run("PathForFileReturnError", func(t *testing.T) {
-		filePath := TEST_DIR + DS + "test1"
+		filePath := TEST_DIR + utils.DS + "test1"
 		assert := assert.New(t)
 		_, err := GetFileInfosUnderDir(filePath)
 		assert.EqualError(err, "readdirent "+filePath+": not a directory")
 	})
 
 	t.Run("CanGetFileInfos", func(t *testing.T) {
-		filePath := TEST_DIR + DS + "test1"
+		filePath := TEST_DIR + utils.DS + "test1"
 
 		f, err := ioutil.ReadDir(filePath)
 		if err != nil {
