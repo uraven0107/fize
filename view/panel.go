@@ -11,7 +11,7 @@ import (
 )
 
 type Panel struct {
-	layout    *tview.Table
+	ui        *tview.Table
 	dirPath   string
 	fileInfos []os.FileInfo
 	keyMap    map[rune]func(Component)
@@ -19,14 +19,16 @@ type Panel struct {
 
 func NewPanel(dirPath string) *Panel {
 	return &Panel{
-		layout:  tview.NewTable().SetBorders(false).SetSelectable(true, false).SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color200)),
 		dirPath: dirPath,
 		keyMap:  make(map[rune]func(Component)),
 	}
 }
 
 func (panel *Panel) GetLayout() tview.Primitive {
-	return panel.layout
+	return tview.NewTable().
+		SetBorders(false).
+		SetSelectable(true, false).
+		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color200))
 }
 
 func (panel *Panel) Render() tview.Primitive {
@@ -35,15 +37,16 @@ func (panel *Panel) Render() tview.Primitive {
 		if fileInfo.IsDir() {
 			cell.SetTextColor(tcell.Color120)
 		}
-		panel.layout.SetCell(i, 0, cell.SetReference(fileInfo))
+		panel.ui.SetCell(i, 0, cell.SetReference(fileInfo))
 	}
-	return panel.layout
+	return panel.ui
 }
 
 func (panel *Panel) Init() error {
 	if err := panel.changeDir(panel.dirPath); err != nil {
 		return err
 	}
+	panel.ui = panel.GetLayout().(*tview.Table)
 	panel.MappingKeyDefault()
 	panel.InitKeyBind()
 	return nil
@@ -60,7 +63,7 @@ func (panel *Panel) changeDir(dirPath string) error {
 }
 
 func (panel *Panel) clear() {
-	table := panel.GetLayout().(*tview.Table)
+	table := panel.ui
 	table.Clear()
 }
 
@@ -79,7 +82,7 @@ func (panel *Panel) MappingKey(key rune, fn func(Component)) {
 }
 
 func (panel *Panel) InitKeyBind() {
-	panel.layout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	panel.ui.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		for key, fn := range panel.keyMap {
 			if key == event.Rune() {
 				fn(panel)
@@ -105,7 +108,7 @@ var Reflesh = func(c Component) {
 
 var DownDir = func(c Component) {
 	panel := c.(*Panel)
-	table := panel.GetLayout().(*tview.Table)
+	table := panel.ui
 	row, col := table.GetSelection()
 	selected := table.GetCell(row, col)
 	fileInfo := selected.GetReference().(os.FileInfo)
