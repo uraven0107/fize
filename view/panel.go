@@ -11,7 +11,7 @@ import (
 )
 
 type Panel struct {
-	ui        *tview.Table
+	View
 	dirPath   string
 	fileInfos []os.FileInfo
 	keyMap    map[rune]func(Component)
@@ -24,11 +24,11 @@ func NewPanel(dirPath string) *Panel {
 	}
 }
 
-func (panel *Panel) GetLayout() tview.Primitive {
-	return tview.NewTable().
+func (panel *Panel) InitLayout() {
+	panel.ui = tview.NewTable().
 		SetBorders(false).
 		SetSelectable(true, false).
-		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color200))
+		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color201))
 }
 
 func (panel *Panel) Render() tview.Primitive {
@@ -37,16 +37,16 @@ func (panel *Panel) Render() tview.Primitive {
 		if fileInfo.IsDir() {
 			cell.SetTextColor(tcell.Color120)
 		}
-		panel.ui.SetCell(i, 0, cell.SetReference(fileInfo))
+		panel.ui.(*tview.Table).SetCell(i, 0, cell.SetReference(fileInfo))
 	}
 	return panel.ui
 }
 
 func (panel *Panel) Init() error {
+	panel.InitLayout()
 	if err := panel.changeDir(panel.dirPath); err != nil {
 		return err
 	}
-	panel.ui = panel.GetLayout().(*tview.Table)
 	panel.MappingKeyDefault()
 	panel.InitKeyBind()
 	return nil
@@ -63,7 +63,7 @@ func (panel *Panel) changeDir(dirPath string) error {
 }
 
 func (panel *Panel) clear() {
-	table := panel.ui
+	table := panel.ui.(*tview.Table)
 	table.Clear()
 }
 
@@ -82,7 +82,7 @@ func (panel *Panel) MappingKey(key rune, fn func(Component)) {
 }
 
 func (panel *Panel) InitKeyBind() {
-	panel.ui.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	panel.ui.(*tview.Table).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		for key, fn := range panel.keyMap {
 			if key == event.Rune() {
 				fn(panel)
@@ -108,7 +108,7 @@ var Reflesh = func(c Component) {
 
 var DownDir = func(c Component) {
 	panel := c.(*Panel)
-	table := panel.ui
+	table := panel.ui.(*tview.Table)
 	row, col := table.GetSelection()
 	selected := table.GetCell(row, col)
 	fileInfo := selected.GetReference().(os.FileInfo)

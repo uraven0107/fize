@@ -5,12 +5,16 @@ import (
 )
 
 type Component interface {
-	GetLayout() tview.Primitive
-	Render() tview.Primitive
 	Init() error
+	InitLayout()
+	Render() tview.Primitive
 }
 
 type Bindable interface {
 	MappingKey(key rune, fn func(Component))
 	InitKeyBind()
+}
+
+type View struct {
+	ui tview.Primitive
 }
