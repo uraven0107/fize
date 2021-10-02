@@ -12,15 +12,12 @@ import (
 func main() {
 	app := tview.NewApplication()
 
-	viewModel := view.NewPanelViewModel()
-	viewModel.InitKeyBind()
-	err := viewModel.InitDir("/home/uraven")
-	if err != nil {
+	panel := view.NewPanel("/home/uraven")
+	if err := panel.Init(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-
-	primitive := viewModel.Render()
+	primitive := panel.Render()
 	if err := app.SetRoot(primitive, true).SetFocus(primitive).Run(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
