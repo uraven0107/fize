@@ -11,7 +11,7 @@ import (
 )
 
 type Panel struct {
-	layout    tview.Primitive
+	layout    *tview.Table
 	dirPath   string
 	fileInfos []os.FileInfo
 	keyMap    map[rune]func(Component)
@@ -30,15 +30,14 @@ func (panel *Panel) GetLayout() tview.Primitive {
 }
 
 func (panel *Panel) Render() tview.Primitive {
-	table := panel.GetLayout().(*tview.Table)
 	for i, fileInfo := range panel.fileInfos {
 		cell := tview.NewTableCell(fileInfo.Name())
 		if fileInfo.IsDir() {
 			cell.SetTextColor(tcell.Color120)
 		}
-		table.SetCell(i, 0, cell.SetReference(fileInfo))
+		panel.layout.SetCell(i, 0, cell.SetReference(fileInfo))
 	}
-	return table
+	return panel.layout
 }
 
 func (panel *Panel) Init() error {
@@ -80,8 +79,7 @@ func (panel *Panel) MappingKey(key rune, fn func(Component)) {
 }
 
 func (panel *Panel) InitKeyBind() {
-	table := panel.layout.(*tview.Table)
-	table.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
+	panel.layout.SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		for key, fn := range panel.keyMap {
 			if key == event.Rune() {
 				fn(panel)

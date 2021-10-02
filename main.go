@@ -12,12 +12,21 @@ import (
 func main() {
 	app := tview.NewApplication()
 
-	panel := view.NewPanel("/home/uraven")
-	if err := panel.Init(); err != nil {
+	left := view.NewPanel("/home/uraven")
+	if err := left.Init(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	primitive := panel.Render()
+
+	right := view.NewPanel("/")
+	if err := right.Init(); err != nil {
+		fmt.Println(err)
+		os.Exit(1)
+	}
+
+	dual := view.NewDual(left, right)
+	primitive := dual.Render()
+
 	if err := app.SetRoot(primitive, true).SetFocus(primitive).Run(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
