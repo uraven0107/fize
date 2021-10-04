@@ -43,7 +43,6 @@ func (panel *Panel) Render() tview.Primitive {
 }
 
 func (panel *Panel) Init() error {
-	panel.InitLayout()
 	if err := panel.changeDir(panel.dirPath); err != nil {
 		return err
 	}

@@ -16,7 +16,6 @@ func NewDual(left Component, right Component) *Dual {
 }
 
 func (dual *Dual) Init() error {
-	dual.InitLayout()
 	if err := dual.right.Init(); err != nil {
 		return err
 	}
@@ -27,6 +26,8 @@ func (dual *Dual) Init() error {
 }
 
 func (dual *Dual) InitLayout() {
+	dual.left.InitLayout()
+	dual.right.InitLayout()
 	dual.ui = tview.NewGrid().
 		SetBorders(true).
 		SetSize(1, 2, 0, 0)

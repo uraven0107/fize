@@ -7,6 +7,7 @@ import (
 type Component interface {
 	Init() error
 	InitLayout()
+	GetLayout() tview.Primitive
 	Render() tview.Primitive
 }
 
@@ -17,4 +18,8 @@ type Bindable interface {
 
 type View struct {
 	ui tview.Primitive
+}
+
+func (view *View) GetLayout() tview.Primitive {
+	return view.ui
 }
