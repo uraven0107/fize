@@ -8,7 +8,7 @@ type Dual struct {
 	right Component
 }
 
-func NewDual(left Component, right Component) *Dual {
+func NewDual(left Component, right Component) Component {
 	return &Dual{
 		left:  left,
 		right: right,
@@ -16,18 +16,18 @@ func NewDual(left Component, right Component) *Dual {
 }
 
 func (dual *Dual) Init() error {
-	if err := dual.right.Init(); err != nil {
+	dual.left.InitLayout()
+	if err := dual.left.Init(); err != nil {
 		return err
 	}
-	if err := dual.left.Init(); err != nil {
+	dual.right.InitLayout()
+	if err := dual.right.Init(); err != nil {
 		return err
 	}
 	return nil
 }
 
 func (dual *Dual) InitLayout() {
-	dual.left.InitLayout()
-	dual.right.InitLayout()
 	dual.ui = tview.NewGrid().
 		SetBorders(true).
 		SetSize(1, 2, 0, 0)

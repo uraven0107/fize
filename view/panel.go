@@ -17,7 +17,7 @@ type Panel struct {
 	keyMap    map[rune]func(Component)
 }
 
-func NewPanel(dirPath string) *Panel {
+func NewPanel(dirPath string) Component {
 	return &Panel{
 		dirPath: dirPath,
 		keyMap:  make(map[rune]func(Component)),

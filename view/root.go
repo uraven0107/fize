@@ -7,7 +7,7 @@ type Root struct {
 	child Component
 }
 
-func NewRoot(child Component) *Root {
+func NewRoot(child Component) Component {
 	return &Root{
 		child: child,
 	}

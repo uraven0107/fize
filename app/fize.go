@@ -19,6 +19,7 @@ func Run() error {
 	right := view.NewPanel("/")
 	dual := view.NewDual(left, right)
 	root := view.NewRoot(dual)
+
 	if err := root.Init(); err != nil {
 		return err
 	}
