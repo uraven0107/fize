@@ -11,11 +11,14 @@ type Component interface {
 	Render() tview.Primitive
 	HasFocus() bool
 	SetFocus()
+	UnFocus()
 }
 
 type View struct {
-	ui  tview.Primitive
-	app *tview.Application
+	ui        tview.Primitive
+	app       *tview.Application
+	focused   func()
+	unfocused func()
 }
 
 func (view *View) GetLayout() tview.Primitive {
@@ -28,6 +31,12 @@ func (view *View) HasFocus() bool {
 
 func (view *View) SetFocus() {
 	view.app.SetFocus(view.ui)
+	view.focused()
+}
+
+func (view *View) UnFocus() {
+	view.ui.Blur()
+	view.unfocused()
 }
 
 type pattern struct {

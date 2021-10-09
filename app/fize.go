@@ -40,7 +40,8 @@ func Run() error {
 	}
 	rootView := root.Render()
 
-	if err := app.SetRoot(rootView, true).SetFocus(rootView).Run(); err != nil {
+	left.SetFocus()
+	if err := app.SetRoot(rootView, true).Run(); err != nil {
 		return err
 	}
 

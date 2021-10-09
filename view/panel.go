@@ -29,6 +29,14 @@ func NewPanel(app *tview.Application, dirPath string) *Panel {
 		SetBorders(false).
 		SetSelectable(true, false).
 		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color201))
+	panel.focused = func() {
+		table := panel.ui.(*tview.Table)
+		table.SetBackgroundColor(tcell.Color237)
+	}
+	panel.unfocused = func() {
+		table := panel.ui.(*tview.Table)
+		table.SetBackgroundColor(0)
+	}
 	return panel
 }
 

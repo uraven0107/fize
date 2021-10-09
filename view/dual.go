@@ -51,28 +51,6 @@ func (dual *Dual) SetFocus() {
 	dual.app.SetFocus(dual.ui)
 }
 
-var FocusToRight = func(c Component) {
-	dual := c.(*Dual)
-	if dual.left.HasFocus() {
-		dual.right.SetFocus()
-	}
-}
-
-var FocusToLeft = func(c Component) {
-	dual := c.(*Dual)
-	if dual.right.HasFocus() {
-		dual.left.SetFocus()
-	}
-}
-
-func (dual *Dual) MappingKey(prefix tcell.Key, key rune, fn func(Component)) {
-	pattern := pattern{
-		prefix: prefix,
-		key:    key,
-	}
-	dual.keyMap[pattern] = fn
-}
-
 func (dual *Dual) InitKeyBind() {
 	dual.ui.(*tview.Grid).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if dual.pre == 0 {
@@ -110,4 +88,28 @@ func (dual *Dual) InitKeyBind() {
 			}
 		}
 	})
+}
+
+var FocusToLeft = func(c Component) {
+	dual := c.(*Dual)
+	if dual.right.HasFocus() {
+		dual.right.UnFocus()
+		dual.left.SetFocus()
+	}
+}
+
+var FocusToRight = func(c Component) {
+	dual := c.(*Dual)
+	if dual.left.HasFocus() {
+		dual.left.UnFocus()
+		dual.right.SetFocus()
+	}
+}
+
+func (dual *Dual) MappingKey(prefix tcell.Key, key rune, fn func(Component)) {
+	pattern := pattern{
+		prefix: prefix,
+		key:    key,
+	}
+	dual.keyMap[pattern] = fn
 }
