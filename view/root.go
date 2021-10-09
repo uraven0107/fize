@@ -7,22 +7,20 @@ type Root struct {
 	child Component
 }
 
-func NewRoot(child Component) Component {
-	return &Root{
+func NewRoot(app *tview.Application, child Component) *Root {
+	root := &Root{
 		child: child,
 	}
+	root.app = app
+	root.ui = nil // rootコンポーネントにレイアウトは存在しない
+	return root
 }
 
 func (root *Root) Init() error {
-	root.InitLayout()
 	if err := root.child.Init(); err != nil {
 		return err
 	}
 	return nil
-}
-
-func (root *Root) InitLayout() {
-	root.child.InitLayout()
 }
 
 func (root *Root) Render() tview.Primitive {

@@ -14,14 +14,22 @@ type Panel struct {
 	View
 	dirPath   string
 	fileInfos []os.FileInfo
-	keyMap    map[rune]func(Component)
+	keyMap    map[pattern]func(Component)
+	pre       tcell.Key
 }
 
-func NewPanel(dirPath string) Component {
-	return &Panel{
+func NewPanel(app *tview.Application, dirPath string) *Panel {
+	panel := &Panel{
 		dirPath: dirPath,
-		keyMap:  make(map[rune]func(Component)),
+		keyMap:  make(map[pattern]func(Component)),
+		pre:     0,
 	}
+	panel.app = app
+	panel.ui = tview.NewTable().
+		SetBorders(false).
+		SetSelectable(true, false).
+		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color201))
+	return panel
 }
 
 func (panel *Panel) InitLayout() {
@@ -46,8 +54,6 @@ func (panel *Panel) Init() error {
 	if err := panel.changeDir(panel.dirPath); err != nil {
 		return err
 	}
-	panel.MappingKeyDefault()
-	panel.InitKeyBind()
 	return nil
 }
 
@@ -76,30 +82,56 @@ func (panel *Panel) reflesh() error {
 	return nil
 }
 
-func (panel *Panel) MappingKey(key rune, fn func(Component)) {
-	panel.keyMap[key] = fn
+func (panel *Panel) MappingKey(prefix tcell.Key, key rune, fn func(Component)) {
+	pattern := pattern{
+		prefix: prefix,
+		key:    key,
+	}
+	panel.keyMap[pattern] = fn
 }
 
 func (panel *Panel) InitKeyBind() {
 	panel.ui.(*tview.Table).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
-		for key, fn := range panel.keyMap {
-			if key == event.Rune() {
-				fn(panel)
+		if panel.pre == 0 {
+			if event.Key() == tcell.KeyRune {
+				pattern := pattern{
+					prefix: 0,
+					key:    event.Rune(),
+				}
+				if fn, ok := panel.keyMap[pattern]; ok {
+					fn(panel)
+					panel.pre = 0
+					return nil
+				}
+				return event
+			} else {
+				panel.pre = event.Key()
+				return nil
+			}
+		} else {
+			if event.Key() == tcell.KeyRune {
+				pattern := pattern{
+					prefix: panel.pre,
+					key:    event.Rune(),
+				}
+				if fn, ok := panel.keyMap[pattern]; ok {
+					fn(panel)
+					panel.pre = 0
+					return nil
+				}
+				panel.pre = 0
+				return nil
+			} else {
+				panel.pre = event.Key()
 				return nil
 			}
 		}
-		return event
 	})
 }
 
-func (panel *Panel) MappingKeyDefault() {
-	panel.MappingKey('r', Reflesh)
-	panel.MappingKey('l', DownDir)
-	panel.MappingKey('h', UpDir)
-}
-
 var Reflesh = func(c Component) {
-	if err := c.(*Panel).reflesh(); err != nil {
+	panel := c.(*Panel)
+	if err := panel.reflesh(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
