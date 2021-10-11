@@ -40,13 +40,6 @@ func NewPanel(app *tview.Application, dirPath string) *Panel {
 	return panel
 }
 
-func (panel *Panel) InitLayout() {
-	panel.ui = tview.NewTable().
-		SetBorders(false).
-		SetSelectable(true, false).
-		SetSelectedStyle(tcell.StyleDefault.Background(tcell.Color201))
-}
-
 func (panel *Panel) Render() tview.Primitive {
 	for i, fileInfo := range panel.fileInfos {
 		cell := tview.NewTableCell(fileInfo.Name())

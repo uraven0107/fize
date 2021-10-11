@@ -32,6 +32,7 @@ func Run() error {
 	dual.MappingKey(tcell.KeyCtrlW, 'l', view.FocusToRight)
 	dual.MappingKey(tcell.KeyCtrlW, 'h', view.FocusToLeft)
 	dual.InitKeyBind()
+	dual.SetFocusToLeft()
 
 	root := view.NewRoot(app, dual)
 
@@ -40,7 +41,6 @@ func Run() error {
 	}
 	rootView := root.Render()
 
-	left.SetFocus()
 	if err := app.SetRoot(rootView, true).Run(); err != nil {
 		return err
 	}

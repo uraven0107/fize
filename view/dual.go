@@ -51,6 +51,14 @@ func (dual *Dual) SetFocus() {
 	dual.app.SetFocus(dual.ui)
 }
 
+func (dual *Dual) SetFocusToLeft() {
+	dual.left.SetFocus()
+}
+
+func (dual *Dual) SetFocusToRight() {
+	dual.right.SetFocus()
+}
+
 func (dual *Dual) InitKeyBind() {
 	dual.ui.(*tview.Grid).SetInputCapture(func(event *tcell.EventKey) *tcell.EventKey {
 		if dual.pre == 0 {

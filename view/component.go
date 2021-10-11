@@ -45,6 +45,6 @@ type pattern struct {
 }
 
 type Bindable interface {
-	MappingKey(prefix tcell.Key, key rune, fn func(Bindable))
+	MappingKey(prefix tcell.Key, key rune, fn func(Component))
 	InitKeyBind()
 }
