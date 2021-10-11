@@ -20,18 +20,15 @@ func Run() error {
 	left.MappingKey(0, 'r', view.Reflesh)
 	left.MappingKey(0, 'l', view.DownDir)
 	left.MappingKey(0, 'h', view.UpDir)
-	left.InitKeyBind()
 
 	right := view.NewPanel(app, "/")
 	right.MappingKey(0, 'r', view.Reflesh)
 	right.MappingKey(0, 'l', view.DownDir)
 	right.MappingKey(0, 'h', view.UpDir)
-	right.InitKeyBind()
 
 	dual := view.NewDual(app, left, right)
 	dual.MappingKey(tcell.KeyCtrlW, 'l', view.FocusToRight)
 	dual.MappingKey(tcell.KeyCtrlW, 'h', view.FocusToLeft)
-	dual.InitKeyBind()
 	dual.SetFocusToLeft()
 
 	root := view.NewRoot(app, dual)

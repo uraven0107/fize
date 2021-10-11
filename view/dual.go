@@ -34,6 +34,12 @@ func (dual *Dual) Init() error {
 	if err := dual.right.Init(); err != nil {
 		return err
 	}
+	if bindable, ok := dual.left.(Bindable); ok {
+		bindable.InitKeyBind()
+	}
+	if bindable, ok := dual.right.(Bindable); ok {
+		bindable.InitKeyBind()
+	}
 	return nil
 }
 

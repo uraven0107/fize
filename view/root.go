@@ -20,6 +20,9 @@ func (root *Root) Init() error {
 	if err := root.child.Init(); err != nil {
 		return err
 	}
+	if bindable, ok := root.child.(Bindable); ok {
+		bindable.InitKeyBind()
+	}
 	return nil
 }
 
