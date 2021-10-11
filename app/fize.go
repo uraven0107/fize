@@ -6,13 +6,6 @@ import (
 	"github.com/uraven0107/fize/view"
 )
 
-type component_type int
-
-const (
-	dual component_type = iota
-	panel
-)
-
 func Run() error {
 	app := tview.NewApplication()
 
