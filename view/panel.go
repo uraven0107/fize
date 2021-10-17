@@ -44,7 +44,16 @@ func (panel *Panel) Render() tview.Primitive {
 	for i, fileInfo := range panel.fileInfos {
 		cell := tview.NewTableCell(fileInfo.Name())
 		if fileInfo.IsDir() {
-			cell.SetTextColor(tcell.Color120)
+			dirPath := utils.ResolvePath(panel.dirPath, fileInfo.Name())
+			accessable, err := utils.IsAccessableDir(dirPath)
+			if err != nil {
+				panic(err) // FIXME
+			}
+			if accessable {
+				cell.SetTextColor(tcell.Color120)
+			} else {
+				cell.SetTextColor(tcell.ColorRed)
+			}
 		}
 		panel.ui.(*tview.Table).SetCell(i, 0, cell.SetReference(fileInfo))
 	}
@@ -59,13 +68,21 @@ func (panel *Panel) Init() error {
 }
 
 func (panel *Panel) changeDir(dirPath string) error {
-	fileInfos, err := service.FetchFileInfos(dirPath)
+	accessable, err := utils.IsAccessableDir(dirPath)
 	if err != nil {
 		return err
 	}
-	panel.dirPath = dirPath
-	panel.fileInfos = fileInfos
-	return nil
+	if accessable {
+		fileInfos, err := service.FetchFileInfos(dirPath)
+		if err != nil {
+			return err
+		}
+		panel.dirPath = dirPath
+		panel.fileInfos = fileInfos
+		return nil
+	} else {
+		return nil
+	}
 }
 
 func (panel *Panel) clear() {
@@ -146,7 +163,10 @@ var DownDir = func(c Component) {
 	fileInfo := selected.GetReference().(os.FileInfo)
 	if fileInfo.IsDir() {
 		dirPath := utils.ResolvePath(panel.dirPath, fileInfo.Name())
-		panel.changeDir(dirPath)
+		if err := panel.changeDir(dirPath); err != nil {
+			fmt.Println(err)
+			os.Exit(1)
+		}
 		if err := panel.reflesh(); err != nil {
 			fmt.Println(err)
 			os.Exit(1)

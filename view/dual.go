@@ -104,6 +104,14 @@ func (dual *Dual) InitKeyBind() {
 	})
 }
 
+func (dual *Dual) MappingKey(prefix tcell.Key, key rune, fn func(Component)) {
+	pattern := pattern{
+		prefix: prefix,
+		key:    key,
+	}
+	dual.keyMap[pattern] = fn
+}
+
 var FocusToLeft = func(c Component) {
 	dual := c.(*Dual)
 	if dual.right.HasFocus() {
@@ -118,12 +126,4 @@ var FocusToRight = func(c Component) {
 		dual.left.UnFocus()
 		dual.right.SetFocus()
 	}
-}
-
-func (dual *Dual) MappingKey(prefix tcell.Key, key rune, fn func(Component)) {
-	pattern := pattern{
-		prefix: prefix,
-		key:    key,
-	}
-	dual.keyMap[pattern] = fn
 }
