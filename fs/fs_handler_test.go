@@ -2,7 +2,7 @@ package fs
 
 import (
 	"fmt"
-	"io/ioutil"
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -26,11 +26,11 @@ func Test_GetFileInfosUnderDir(t *testing.T) {
 	})
 
 	t.Run("CanGetFileInfos", func(t *testing.T) {
-		filePath := TEST_DIR + utils.DS + "test1"
+		filePath := TEST_DIR
 
-		f, err := ioutil.ReadDir(filePath)
+		f, err := os.ReadDir(filePath)
 		if err != nil {
-			fmt.Printf("⚠️ Error has occured at ioutil.ReadDir(%v)!!! error = %v", filePath, err)
+			fmt.Printf("⚠️ Error has occured at os.ReadDir(%v)!!! error = %v", filePath, err)
 			return
 		}
 		expected := len(f)
@@ -40,5 +40,15 @@ func Test_GetFileInfosUnderDir(t *testing.T) {
 
 		assert.Equal(expected, len(fileInfos), "🚨 Length of []os.FileInfo doesn't equal!!!")
 
+	})
+
+	t.Run("FileInfoShouldn'tNil", func(t *testing.T) {
+		assert := assert.New(t)
+		filePath := TEST_DIR
+		fileInfos, err := GetFileInfosUnderDir(filePath)
+		assert.Nil(err)
+		for _, fileInfo := range fileInfos {
+			assert.NotNil(fileInfo)
+		}
 	})
 }
